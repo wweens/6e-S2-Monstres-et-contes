@@ -12,6 +12,7 @@
     *{box-sizing:border-box}html{scroll-behavior:smooth;background:#efd6bd}body{margin:0;color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,sans-serif;background:transparent!important;min-height:100vh}
     .page-bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;z-index:0;pointer-events:none;user-select:none}
     header,main,footer{position:relative;z-index:1}
+    .course-brand{position:absolute;z-index:3;top:1rem;left:1.2rem;padding:.48rem .8rem;border:1px solid #ffffff66;border-radius:999px;background:#241638b8;color:white;font-weight:700;letter-spacing:.03em;backdrop-filter:blur(8px);box-shadow:0 5px 18px #160b2a44}
     button,a{font:inherit}.skip{position:fixed;left:1rem;top:-5rem;z-index:99;background:#fff;padding:.8rem;border-radius:.7rem}.skip:focus{top:1rem}
     .hero{min-height:78vh;display:grid;place-items:center;padding:3rem 1.1rem 5rem;position:relative;overflow:hidden;background:linear-gradient(90deg,rgba(35,20,43,.48),rgba(35,20,43,.16))}
     .hero-inner{width:min(1060px,100%);text-align:center;color:white}.eyebrow{display:inline-flex;gap:.6rem;align-items:center;padding:.55rem 1rem;border:1px solid #ffffff55;background:#ffffff16;border-radius:999px;backdrop-filter:blur(8px);font-weight:700}
@@ -42,6 +43,7 @@
 </head>
 <body>
   <img class="page-bg" src="assets/princesses-chipies.jpg?v=1" alt="" aria-hidden="true">
+  <div class="course-brand">Cours de M. Weens</div>
   <a class="skip" href="#parcours">Aller au parcours</a>
   <header class="hero">
     <div class="hero-inner">
