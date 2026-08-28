@@ -30,6 +30,7 @@
     footer{text-align:center;color:#ddd0e6;padding:1.5rem}footer strong{color:var(--gold)}
     .session-head{background:linear-gradient(100deg,color-mix(in srgb,var(--accent) 24%,#ffffffa8),#ffffff8f)}
     .session .focus,.session details,.session .quiz,.session .trainer{background:#ffffffa3}
+    .mcq-top{display:flex;justify-content:space-between;gap:.6rem;align-items:center;margin-bottom:.7rem}.mcq-count,.mcq-score{font-size:.82rem;font-weight:700;padding:.28rem .58rem;border-radius:999px;background:#f2ecf5}.mcq-next{display:none;margin-top:.65rem;border:0;border-radius:10px;padding:.58rem .8rem;background:var(--accent);color:white;font-weight:700;cursor:pointer}.mcq-next.show{display:inline-block}.mcq-summary{text-align:center;padding:.8rem}.mcq-summary strong{display:block;font:2rem Boogaloo;color:var(--accent);margin:.3rem}
     .session>.session-resources{margin:.75rem 1rem .1rem;padding:0 0 .75rem;border-bottom:1px solid color-mix(in srgb,var(--accent) 30%,transparent);justify-content:flex-start}
     .session>.session-resources .btn{min-height:44px;justify-content:center}
     .session>.session-resources .wayground{background:#f0ad2f;color:#30213d;box-shadow:none}
@@ -139,6 +140,7 @@
     function notify(){toast.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>toast.classList.remove('show'),1800)}
     document.querySelectorAll('.done').forEach(b=>b.addEventListener('click',()=>{const k=b.closest('.session').dataset.key;progress.has(k)?progress.delete(k):progress.add(k);localStorage.setItem(key,JSON.stringify([...progress]));update();notify()}));
     document.querySelectorAll('.quiz').forEach(q=>q.querySelectorAll('.choice').forEach(b=>b.addEventListener('click',()=>{q.querySelectorAll('.choice').forEach(x=>x.classList.remove('good','bad'));const ok=b.dataset.value===q.dataset.answer;b.classList.add(ok?'good':'bad');q.querySelector('.feedback').textContent=ok?'Bravo ! Bonne réponse.':'Pas encore : relis l’encadré puis essaie à nouveau.'})));
+    function mountMcq(sessionKey,questions){const box=document.querySelector(`[data-key="${sessionKey}"] .quiz`);let index=0,score=0,answered=false;function render(){answered=false;const [question,choices,answer,why]=questions[index];box.innerHTML=`<div class="mcq-top"><span class="mcq-count">Question ${index+1} / ${questions.length}</span><span class="mcq-score">Score : ${score}</span></div><p>${question}</p><div class="choices">${choices.map((choice,i)=>`<button class="choice" data-index="${i}">${choice}</button>`).join('')}</div><div class="feedback" aria-live="polite"></div><button class="mcq-next">${index===questions.length-1?'Voir mon résultat':'Question suivante →'}</button>`;const buttons=[...box.querySelectorAll('.choice')],feedback=box.querySelector('.feedback'),next=box.querySelector('.mcq-next');buttons.forEach(button=>button.addEventListener('click',()=>{if(answered)return;answered=true;const chosen=Number(button.dataset.index),ok=chosen===answer;if(ok)score++;buttons.forEach((b,i)=>{b.disabled=true;if(i===answer)b.classList.add('good');else if(i===chosen)b.classList.add('bad')});feedback.textContent=(ok?'✓ Bonne réponse. ':'✗ Pas encore. ')+why;box.querySelector('.mcq-score').textContent=`Score : ${score}`;next.classList.add('show')}));next.addEventListener('click',()=>{if(index<questions.length-1){index++;render()}else{box.innerHTML=`<div class="mcq-summary"><span>🏆</span><strong>${score} / ${questions.length}</strong><p>${score===questions.length?'Parfait ! Tu maîtrises la leçon.':score>=7?'Bravo ! Encore un petit effort pour tout maîtriser.':'Relis la leçon puis tente une nouvelle série.'}</p><button class="check">Recommencer les 10 questions</button></div>`;box.querySelector('button').addEventListener('click',()=>{index=0;score=0;render()})}})}render()}
     const people=['je','tu','il/elle','nous','vous','ils/elles'];
     const conjugations={
       imparfait:{manger:['mangeais','mangeais','mangeait','mangions','mangiez','mangeaient'],finir:['finissais','finissais','finissait','finissions','finissiez','finissaient'],prendre:['prenais','prenais','prenait','prenions','preniez','prenaient'],voir:['voyais','voyais','voyait','voyions','voyiez','voyaient'],être:['étais','étais','était','étions','étiez','étaient'],avoir:['avais','avais','avait','avions','aviez','avaient'],crier:['criais','criais','criait','criions','criiez','criaient'],avancer:['avançais','avançais','avançait','avancions','avanciez','avançaient'],faire:['faisais','faisais','faisait','faisions','faisiez','faisaient']},
@@ -151,6 +153,75 @@
       vocabulary:[['Titre de noblesse : comte, compte ou conte ?','comte'],['Calcul ou dénombrement : comte, compte ou conte ?','compte'],['Court récit merveilleux : comte, compte ou conte ?','conte'],['Antonyme de « bienveillant ».','malveillant'],['Antonyme de « rassurant ».','inquiétant'],['Adjectif désignant un nez court et aplati.','camus'],['Bruit léger de l’eau contre un rivage.','clapotis'],['Bruit sec produit par des branches qui se brisent.','craquement'],['Partie du visage qui peut être « globuleuse » ou « en amande ».','yeux'],['Partie du visage qui peut être « aquiline » ou « busquée ».','nez']]
     };
     const trainerNames={plural:'Défi pluriels',imparfait:'Générateur — imparfait',punctuation:'Défi ponctuation',passeSimple:'Générateur — passé simple',types:'Défi types et formes',vocabulary:'Défi vocabulaire'};
+    const mcqBanks={
+      s2:[
+        ['Quel est le pluriel de « un travail » ?',['des travails','des travaux','des travaille'],1,'Les noms en -ail de cette famille font leur pluriel en -aux.'],
+        ['Quel groupe nominal est correctement écrit ?',['des souries','des souris','des sourix'],1,'Un nom terminé par -s au singulier ne change pas au pluriel.'],
+        ['Quel est le pluriel de « un bijou » ?',['des bijoux','des bijous','des bijouts'],0,'Bijou fait partie des sept noms en -ou qui prennent -oux.'],
+        ['Quel est le pluriel de « un feu » ?',['des feus','des feux','des feuxs'],1,'Les noms en -eu prennent généralement -x.'],
+        ['Quelle forme est correcte ?',['des festivals','des festivaux','des festivales'],0,'Festival est une exception : il prend simplement -s.'],
+        ['Quel est le pluriel de « un vitrail » ?',['des vitrails','des vitraux','des vitrauxs'],1,'Vitrail fait partie des noms en -ail qui deviennent -aux.'],
+        ['Quelle forme est correcte ?',['des pneux','des pneus','des pneusses'],1,'Pneu est une exception parmi les noms en -eu : il prend -s.'],
+        ['Quel est le pluriel de « un corail » ?',['des corails','des coraux','des coreaux'],1,'Corail devient coraux au pluriel.'],
+        ['Quel nom ne change pas au pluriel ?',['gaz','jeu','chapeau'],0,'Gaz se termine déjà par -z.'],
+        ['Quelle forme est correcte ?',['des chacaux','des chacals','des chacalsx'],1,'Chacal est une exception des noms en -al : il prend -s.']],
+      s3:[
+        ['Quelles sont les terminaisons de l’imparfait ?',['-ai, -as, -a, -âmes, -âtes, -èrent','-ais, -ais, -ait, -ions, -iez, -aient','-e, -es, -e, -ons, -ez, -ent'],1,'Les six terminaisons sont toujours -ais, -ais, -ait, -ions, -iez, -aient.'],
+        ['Comment trouve-t-on généralement la base de l’imparfait ?',['Avec « nous » au présent sans -ons','Avec « je » au futur','Avec l’infinitif complet'],0,'On part de la forme avec nous au présent et on retire -ons.'],
+        ['Quelle forme est correcte ?',['nous gagnions','nous gagnais','nous gagnaient'],0,'Avec nous, la terminaison est -ions.'],
+        ['Quelle forme est correcte ?',['vous faisaient','vous faisiez','vous faisez'],1,'Faire donne vous faisiez à l’imparfait.'],
+        ['Complète : « Les sorcières … dans la forêt. »',['vivait','vivaient','viviez'],1,'Avec elles, la terminaison est -aient.'],
+        ['Quel est le radical de « être » à l’imparfait ?',['êt-','ét-','ser-'],1,'Être est le grand irrégulier : j’étais, nous étions.'],
+        ['Quelle forme est correcte ?',['vous criiez','vous criez','vous criaient'],0,'Le radical cri- rencontre la terminaison -iez : criiez.'],
+        ['Complète : « Tu … le train. »',['prenait','prenais','preniez'],1,'Avec tu, la terminaison est -ais.'],
+        ['Quelle forme n’est pas à l’imparfait ?',['je regardais','elle riait','je comptai'],2,'Je comptai est au passé simple.'],
+        ['Complète : « Il … à son avenir. »',['réfléchissais','réfléchissait','réfléchissaient'],1,'Avec il, la terminaison est -ait.']],
+      s5:[
+        ['Quel signe termine une phrase interrogative ?',['.','?','!'],1,'Une question se termine par un point d’interrogation.'],
+        ['Quelle phrase interpelle correctement les enfants ?',['Venez manger les enfants !','Venez manger, les enfants !','Venez, manger les enfants !'],1,'La virgule détache le groupe que l’on interpelle.'],
+        ['Quel signe annonce souvent une explication ou une énumération ?',['les deux-points','le point-virgule','l’apostrophe'],0,'Les deux-points annoncent ce qui va être expliqué ou énuméré.'],
+        ['Quels signes encadrent des paroles citées ?',['les parenthèses','les guillemets','les crochets'],1,'Les guillemets encadrent les paroles rapportées directement.'],
+        ['Dans un dialogue, quel signe marque souvent un changement de locuteur ?',['le tiret','la virgule','le deux-points'],0,'Chaque nouvelle réplique peut commencer par un tiret.'],
+        ['Quel signe exprime une émotion forte ?',['le point d’exclamation','le point-virgule','les points de suspension uniquement'],0,'Le point d’exclamation marque notamment la joie, la peur ou la colère.'],
+        ['Quelle phrase est correctement ponctuée ?',['Où vas-tu.','Où vas-tu ?','Où, vas-tu !'],1,'Il s’agit d’une question.'],
+        ['Quelle phrase est correctement écrite ?',['La sorcière prépare trois ingrédients : une plume, un os et une dent.','La sorcière prépare trois ingrédients, : une plume un os et une dent','La sorcière prépare trois ingrédients ? une plume, un os et une dent.'],0,'Les deux-points annoncent l’énumération et les virgules séparent ses éléments.'],
+        ['Quel signe marque une courte pause dans la phrase ?',['la virgule','le point','le point d’interrogation'],0,'La virgule organise la phrase sans la terminer.'],
+        ['Quelle ponctuation convient ? « Soudain… la porte s’ouvrit. »',['une virgule après « Soudain »','un point d’interrogation après « Soudain »','aucun signe'],0,'Le complément placé en tête de phrase est ici détaché par une virgule.']],
+      s6:[
+        ['Quelle forme est correcte au passé simple ?',['je chantais','je chantai','je chanterai'],1,'Au passé simple, chanter donne je chantai.'],
+        ['Complète : « Ils … dans la forêt. » (entrer)',['entrèrent','entraient','entreront'],0,'À la 3e personne du pluriel, les verbes du 1er groupe se terminent par -èrent.'],
+        ['Quelle forme est correcte ?',['il finit','il finissa','il finît'],0,'Finir donne il finit au passé simple.'],
+        ['Conjugue « finir » avec nous au passé simple.',['nous finissions','nous finîmes','nous finirons'],1,'Le i porte un accent circonflexe avec nous : finîmes.'],
+        ['À quelles personnes trouve-t-on l’accent circonflexe ?',['je et tu','nous et vous','il et ils'],1,'Il apparaît aux 1re et 2e personnes du pluriel.'],
+        ['Conjugue « voir » avec il au passé simple.',['il voya','il vit','il voyait'],1,'Voir utilise la voyelle i : il vit.'],
+        ['Conjugue « avoir » avec il au passé simple.',['il avait','il eut','il eu'],1,'Avoir utilise la voyelle u : il eut.'],
+        ['Conjugue « venir » avec ils au passé simple.',['ils vinrent','ils venaient','ils venirent'],0,'Venir utilise la série en -in : ils vinrent.'],
+        ['Conjugue « être » avec nous au passé simple.',['nous étions','nous fûmes','nous sommes'],1,'Être donne nous fûmes.'],
+        ['Conjugue « tenir » avec vous au passé simple.',['vous teniez','vous tîntes','vous tenez'],1,'Tenir utilise la série en -in avec l’accent : vous tîntes.']],
+      s8:[
+        ['Combien existe-t-il de types de phrases dans la leçon ?',['deux','trois','quatre'],1,'La leçon distingue les types déclaratif, interrogatif et injonctif.'],
+        ['Quel est le type de « La sorcière prépare une potion. » ?',['déclaratif','interrogatif','injonctif'],0,'Cette phrase donne une information.'],
+        ['Quel est le type de « Ferme la porte ! » ?',['déclaratif','interrogatif','injonctif'],2,'Cette phrase donne un ordre.'],
+        ['Quel est le type de « Où se cache l’ogre ? » ?',['injonctif','interrogatif','déclaratif'],1,'Cette phrase pose une question.'],
+        ['Une interrogation totale attend comme réponse…',['oui ou non','un lieu précis','une longue explication'],0,'La réponse attendue est oui ou non.'],
+        ['Quelle interrogation appartient au niveau soutenu ?',['Tu viens ?','Est-ce que tu viens ?','Viens-tu ?'],2,'Le niveau soutenu emploie l’inversion du sujet.'],
+        ['Quelle phrase est à la forme négative ?',['Tout est prêt.','Rien n’est prêt.','Tout sera prêt !'],1,'Rien… ne construit ici la négation.'],
+        ['Que traduit principalement la forme exclamative ?',['une émotion forte','une question totale','une information neutre'],0,'Elle exprime notamment la surprise, la joie ou la colère.'],
+        ['« Ne mange pas cette pomme ! » est…',['déclarative et affirmative','injonctive, négative et exclamative','interrogative et négative'],1,'Elle donne un ordre, contient une négation et exprime fortement l’interdiction.'],
+        ['Une phrase possède toujours…',['un type, et éventuellement une ou plusieurs formes','une forme mais jamais de type','deux types différents'],0,'Toute phrase a un type et peut cumuler plusieurs formes.']],
+      s10:[
+        ['Quel mot désigne un titre de noblesse ?',['conte','compte','comte'],2,'Un comte est un noble.'],
+        ['Quel mot désigne un calcul ou un dénombrement ?',['compte','conte','comte'],0,'Un compte correspond ici à un calcul.'],
+        ['Quel mot désigne un court récit merveilleux ?',['comte','conte','compte'],1,'Le conte est un récit merveilleux.'],
+        ['Quel adjectif convient le mieux à une fée qui aide le héros ?',['maléfique','bienveillante','vorace'],1,'Une fée qui aide est bienveillante.'],
+        ['Quel est l’antonyme de « rassurant » ?',['inquiétant','agréable','attirant'],0,'Inquiétant exprime l’idée opposée.'],
+        ['Le « clapotis » correspond au bruit…',['des vagues','des branches','de la neige'],0,'Le clapotis est le bruit léger de l’eau.'],
+        ['Le « craquement » correspond au bruit…',['des branches','du vent','de l’air'],0,'Des branches qui se brisent craquent.'],
+        ['À quelle partie du visage conviennent « globuleux » et « en amande » ?',['aux yeux','au nez','aux cheveux'],0,'Ces adjectifs décrivent la forme des yeux.'],
+        ['À quelle partie du visage conviennent « aquilin », « camus » et « busqué » ?',['à la bouche','au nez','au teint'],1,'Ces trois adjectifs décrivent un nez.'],
+        ['Quel mot est un adjectif dans « des êtres voraces » ?',['êtres','voraces','des'],1,'Voraces précise le nom êtres : c’est un adjectif.']]
+    };
+    Object.entries(mcqBanks).forEach(([key,questions])=>mountMcq(key,questions));
     function norm(v){return v.toLowerCase().trim().replace(/[’']/g,"'").replace(/\s+/g,' ')}
     function randomConjugation(tense){const verbs=Object.keys(conjugations[tense]);const verb=verbs[Math.floor(Math.random()*verbs.length)];const person=Math.floor(Math.random()*6);return {q:`Conjugue « ${verb} » ${tense==='passeSimple'?'au passé simple':'à l’imparfait'} avec « ${people[person]} » :`,a:conjugations[tense][verb][person]}}
     function randomStatic(kind){const bank=staticBanks[kind];const [q,a]=bank[Math.floor(Math.random()*bank.length)];return {q,a}}
