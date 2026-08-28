@@ -10,10 +10,10 @@
     @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Boogaloo&display=swap');
     :root{--ink:#251f31;--paper:#fffaf0;--gold:#ffd56b;--purple:#69449d;--purple2:#392452;--green:#3d8067;--red:#bd4f55;--blue:#387ca2;--shadow:0 18px 55px #160b2a55}
     *{box-sizing:border-box}html{scroll-behavior:smooth;background:#efd6bd}body{margin:0;color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,sans-serif;background:transparent!important;min-height:100vh}
-    body:before{content:"";position:fixed;inset:0;z-index:-5;background-image:linear-gradient(rgba(40,23,45,.12),rgba(40,23,45,.24)),url('assets/princesses-chipies-v2.png');background-size:cover;background-position:center center;background-repeat:no-repeat;pointer-events:none}
-    body:after{display:none}
+    .page-bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;z-index:0;pointer-events:none;user-select:none}
+    header,main,footer{position:relative;z-index:1}
     button,a{font:inherit}.skip{position:fixed;left:1rem;top:-5rem;z-index:99;background:#fff;padding:.8rem;border-radius:.7rem}.skip:focus{top:1rem}
-    .hero{min-height:78vh;display:grid;place-items:center;padding:3rem 1.1rem 5rem;position:relative;overflow:hidden;background:linear-gradient(90deg,rgba(35,20,43,.48),rgba(35,20,43,.16)),url('assets/princesses-chipies-v2.png') center center/cover no-repeat}
+    .hero{min-height:78vh;display:grid;place-items:center;padding:3rem 1.1rem 5rem;position:relative;overflow:hidden;background:linear-gradient(90deg,rgba(35,20,43,.48),rgba(35,20,43,.16))}
     .hero-inner{width:min(1060px,100%);text-align:center;color:white}.eyebrow{display:inline-flex;gap:.6rem;align-items:center;padding:.55rem 1rem;border:1px solid #ffffff55;background:#ffffff16;border-radius:999px;backdrop-filter:blur(8px);font-weight:700}
     h1,h2,h3{font-family:Boogaloo,"Atkinson Hyperlegible",sans-serif;letter-spacing:.02em}h1{font-size:clamp(3.4rem,10vw,7.8rem);line-height:.82;margin:1.4rem 0;text-shadow:0 8px 0 #161022,0 12px 30px #0008}.monster{color:var(--gold);display:block}.subtitle{font-size:clamp(1.05rem,2vw,1.35rem);max-width:720px;margin:0 auto 1.7rem;color:#f4eafa}
     .hero-actions,.resource-row{display:flex;justify-content:center;flex-wrap:wrap;gap:.8rem}.btn{border:0;border-radius:999px;padding:.8rem 1.15rem;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:.45rem;cursor:pointer;background:var(--gold);color:#342142;box-shadow:0 5px 0 #b8892c;transition:.18s}.btn:hover{transform:translateY(-2px)}.btn.secondary{background:#fff;color:#4d326d;box-shadow:0 5px 0 #c9b8d4}.btn.ghost{background:#ffffff12;color:#fff;border:1px solid #ffffff55;box-shadow:none}
@@ -31,11 +31,12 @@
     .session-head{background:linear-gradient(100deg,color-mix(in srgb,var(--accent) 24%,#ffffffa8),#ffffff8f)}
     .session .focus,.session details,.session .quiz,.session .trainer{background:#ffffffa3}
     .toast{position:fixed;right:1rem;bottom:1rem;background:#1e563d;color:white;padding:.8rem 1rem;border-radius:12px;box-shadow:var(--shadow);transform:translateY(140%);transition:.3s;z-index:99}.toast.show{transform:none}
-    @media(max-width:760px){body:before{background-position:55% center}.hero{min-height:70vh}.intro-grid,.session-body,.resource-grid{grid-template-columns:1fr}.session-head{grid-template-columns:auto 1fr auto}.toolbar{top:.3rem}.tag{font-size:.73rem}.session-head h3{font-size:1.45rem}.session-body{padding:.2rem .8rem .9rem}.panel{border-radius:20px}.resource-row .btn{width:100%;justify-content:center}}
+    @media(max-width:760px){.page-bg{object-position:55% center}.hero{min-height:70vh}.intro-grid,.session-body,.resource-grid{grid-template-columns:1fr}.session-head{grid-template-columns:auto 1fr auto}.toolbar{top:.3rem}.tag{font-size:.73rem}.session-head h3{font-size:1.45rem}.session-body{padding:.2rem .8rem .9rem}.panel{border-radius:20px}.resource-row .btn{width:100%;justify-content:center}}
     @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
   </style>
 </head>
 <body>
+  <img class="page-bg" src="assets/princesses-chipies-v2.png?v=3" alt="" aria-hidden="true">
   <a class="skip" href="#parcours">Aller au parcours</a>
   <header class="hero">
     <div class="hero-inner">
