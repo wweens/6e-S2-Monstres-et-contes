@@ -30,8 +30,11 @@
     footer{text-align:center;color:#ddd0e6;padding:1.5rem}footer strong{color:var(--gold)}
     .session-head{background:linear-gradient(100deg,color-mix(in srgb,var(--accent) 24%,#ffffffa8),#ffffff8f)}
     .session .focus,.session details,.session .quiz,.session .trainer{background:#ffffffa3}
+    .session>.session-resources{margin:.1rem 1rem 1rem;padding:.8rem 0 0;border-top:1px solid color-mix(in srgb,var(--accent) 30%,transparent);justify-content:flex-start}
+    .session>.session-resources .btn{min-height:44px;justify-content:center}
+    .session>.session-resources .wayground{background:#f0ad2f;color:#30213d;box-shadow:none}
     .toast{position:fixed;right:1rem;bottom:1rem;background:#1e563d;color:white;padding:.8rem 1rem;border-radius:12px;box-shadow:var(--shadow);transform:translateY(140%);transition:.3s;z-index:99}.toast.show{transform:none}
-    @media(max-width:760px){.page-bg{object-position:55% center}.hero{min-height:70vh}.intro-grid,.session-body,.resource-grid{grid-template-columns:1fr}.session-head{grid-template-columns:auto 1fr auto}.toolbar{top:.3rem}.tag{font-size:.73rem}.session-head h3{font-size:1.45rem}.session-body{padding:.2rem .8rem .9rem}.panel{border-radius:20px}.resource-row .btn{width:100%;justify-content:center}}
+    @media(max-width:760px){.page-bg{object-position:55% center}.hero{min-height:70vh}.intro-grid,.session-body,.resource-grid{grid-template-columns:1fr}.session-head{grid-template-columns:auto 1fr auto}.toolbar{top:.3rem}.tag{font-size:.73rem}.session-head h3{font-size:1.45rem}.session-body{padding:.2rem .8rem .9rem}.panel{border-radius:20px}.resource-row .btn,.session>.session-resources .btn{width:100%;justify-content:center}}
     @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
   </style>
 </head>
@@ -168,6 +171,7 @@
     };
     function youtubeId(url){const match=url.match(/(?:youtu\.be\/|v=)([\w-]{11})/);return match?match[1]:null}
     Object.entries(media).forEach(([key,items])=>{const actions=document.querySelector(`[data-key="${key}"] .actions`);const grid=document.createElement('div');grid.className='media-grid';items.forEach(([label,url])=>{const id=youtubeId(url);const isCanopy=url.includes('reseau-canope.fr');const isAudio=url.includes('1dyqVBy');const link=document.createElement('a');link.className=`media-card${isCanopy?' canopy':''}${isAudio?' audio':''}`;link.href=url;link.target='_blank';link.rel='noopener';link.setAttribute('aria-label',label);if(id){const img=document.createElement('img');img.src=`https://i.ytimg.com/vi/${id}/hqdefault.jpg`;img.alt='';img.loading='lazy';link.appendChild(img)}const play=document.createElement('span');play.className='play-dot';play.textContent=isAudio?'♫':'▶';const text=document.createElement('span');text.className='media-label';text.textContent=label.replace(/^▶️ |^🎧 /,'');link.append(play,text);grid.appendChild(link)});actions.before(grid)});
+    sessions.forEach(session=>{const actions=session.querySelector('.actions');if(!actions)return;actions.classList.add('session-resources');const documentLink=actions.querySelector('a');if(documentLink)documentLink.textContent='📄 Document de classe ↗';const wayground=document.createElement('a');wayground.className='btn wayground';wayground.href='https://wayground.com/join/';wayground.target='_blank';wayground.rel='noopener';wayground.textContent='🎮 À toi de jouer ! — Quiz Wayground';actions.appendChild(wayground);session.appendChild(actions)});
     document.querySelector('#search').addEventListener('input',e=>{const term=e.target.value.toLowerCase().trim();sessions.forEach(s=>s.hidden=term&&!(`${s.dataset.search} ${s.textContent}`.toLowerCase().includes(term)))});
     document.querySelector('#expand').addEventListener('click',e=>{const ds=[...document.querySelectorAll('details')];const open=!ds.every(d=>d.open);ds.forEach(d=>d.open=open);e.target.textContent=open?'Tout replier':'Tout déplier'});
     document.querySelector('#reset').addEventListener('click',()=>{if(confirm('Effacer les séances cochées sur cet appareil ?')){progress.clear();localStorage.removeItem(key);update()}});
